@@ -1,3 +1,11 @@
+#' R interface to luchtmeetnet api
+#'
+#' @param obj The object to query
+#' @param params  The params to pass to the query
+#' @param verbose Whether to print out stuffs
+#' @return A data.frame with reponse data
+#' @export
+#' @importFrom dplyr %>%
 luchtmeetnet_get_data <- function(obj, params = list(), verbose = FALSE) {
   luchtmeetnet_request <- function (url, params) {
     next_page = 1
