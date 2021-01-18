@@ -3,18 +3,23 @@
 #' @param obj The object to query
 #' @param components  List of components (pm25, pm10, no2, o3)
 #' @param report The report (hourly)
-#' @param start Start date (i.e. 2014-01-01T20:30:00Z)
-#' @param end End date (i.e. 2014-01-01T20:30:00Z)
+#' @param start Start date object
+#' @param end End date object
 #' @param verbose Whether to print out stuffs
 #' @return A data.frame with reponse data
+#'
+#' @examples
+#' luchtmeetnet_get_report(c("PM25", "PM10", "NO2", "O3"), "hourly", "2019-01-01T00:00:00", "2019-01-31T23:00:00")
+#'
 #' @export
 #' @importFrom dplyr %>%
+#' @importFrom lubridate ymd_hms
 luchtmeetnet_get_report <- function(components, report, start, end, verbose = FALSE) {
   component_map <- list(
-    "pm25" = "012502d5-6a46-479b-b1a3-1f005e9de998",
-    "pm10" = "567663c8-27a4-4bc2-aa8d-d6b56baaed5b",
-    "no2" = "6274c56d-4554-4f08-9d49-30aafd868349",
-    "o3" = "460f0fa9-40a2-4c9c-9533-20d0135be687"
+    "PM25" = "012502d5-6a46-479b-b1a3-1f005e9de998",
+    "PM10" = "567663c8-27a4-4bc2-aa8d-d6b56baaed5b",
+    "NO2" = "6274c56d-4554-4f08-9d49-30aafd868349",
+    "O3" = "460f0fa9-40a2-4c9c-9533-20d0135be687"
   )
   report_map <- list(
     "hourly" = "34d04bda-f739-4e9b-94e9-3e2ffae5e0db"
@@ -27,7 +32,7 @@ luchtmeetnet_get_report <- function(components, report, start, end, verbose = FA
     stop("Please supply a valid report (hourly)")
   }
 
-  if (as.numeric(ymd_hms(end) - ymd_hms(start), "days") > 31) {
+  if (as.numeric(end - start, "days") > 31) {
     warning("You can't request more than 1 month of data.")
   }
 
@@ -38,8 +43,8 @@ luchtmeetnet_get_report <- function(components, report, start, end, verbose = FA
     }
 
     params = list(
-      start_date = start,
-      end_date = end,
+      start_date = format(start, "%Y-%m-%dT%H:%M:%S"),
+      end_date = format(end, "%Y-%m-%dT%H:%M:%S"),
       sos_component_id = component_id,
       sos_report_id = report_id
     )
@@ -61,7 +66,7 @@ luchtmeetnet_get_report <- function(components, report, start, end, verbose = FA
 
 
     return(data)
-  }) %>% purrr::reduce(union_all)
+  }) %>% purrr::reduce(dplyr::union_all)
 
   return(dataj)
 }

@@ -4,6 +4,10 @@
 #' @param params  The params to pass to the query
 #' @param verbose Whether to print out stuffs
 #' @return A data.frame with reponse data
+#'
+#' @examples
+#' luchtmeetnet_get_data("measurements", params = list(start = "2020-01-01T00:00:00", end = "2020-01-06T23:00:00", formula = "PM25"))
+#'
 #' @export
 #' @importFrom dplyr %>%
 luchtmeetnet_get_data <- function(obj, params = list(), verbose = FALSE) {
@@ -40,5 +44,6 @@ luchtmeetnet_get_data <- function(obj, params = list(), verbose = FALSE) {
   }
 
   url <- "https://api.luchtmeetnet.nl/open_api/{obj}/" %>% glue::glue()
-  return(luchtmeetnet_request(url, params))
+
+  luchtmeetnet_request(url, params)
 }
